@@ -23,6 +23,11 @@ async function start(searchString) {
     await page.goto(imagesSectionUrl)
     await page.screenshot({ path: "images.png" })
 
+    let selectImage = await page.evaluate(() => {
+        page.click(document.querySelector(".isv-r a"))
+        page.screenshot({ path: "clickedAnchor.png" })
+    })
+
 
     // for(let image of imageUrls){
 
