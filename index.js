@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const fs = require('fs/promises')
+const client = require('https')
 
 async function start(searchString) {
     const browser = await puppeteer.launch()
@@ -15,7 +16,6 @@ async function start(searchString) {
     // const images = await page.$$eval(".hdtb-mitem a", (sectionAnchor) => {
     //     return sectionAnchor.map(section => section.href)
     // })
-
     let imagesSectionUrl = await page.evaluate(() => {
         let searchSections = Array.from(document.querySelectorAll(".hdtb-mitem a")).map(anchor => anchor.href)
         return searchSections.find(e => e.includes("&tbm=isch"))
@@ -35,29 +35,12 @@ async function start(searchString) {
         const singleDiv = await page.evaluate(el => el, div)
         page.waitForXPath('//*[@id="islrg"]/div[1]/div[1]/@data-id')
         await page.click(`div[data-id="${singleDiv}"]`)
-        await page.waitForSelector('img.n3VNCb')
+        await page.waitForSelector('.n3VNCb.KAlRDb')
         let imageUrl = await page.evaluate(() => {
-            return document.querySelector("#Sva75c > div > div > div.pxAole > div.tvh9oe.BIB1wf > c-wiz > div > div.OUZ5W > div.zjoqD > div.qdnLaf.isv-id.b0vFpe > div > a > img").src
+            return document.querySelector('.n3VNCb.KAlRDb').src
         })
-        if (imageUrl.includes("https://")) {
-            page.goto(imageUrl)
-        }
         page.goBack()
-        loopCOunt++
     }
-
-    await fs.writeFile("loops.txt", loopCOunt.toString())
-
-    // for (div of divsToBeClicked) {
-    //     await page.click(`${div}`)
-    //     //await page.waitForSelector('.zjoqD img')
-    //     //page.goto(document.querySelector('.zjoqD img').src)
-    // }
-
-    // let imageToClick = await page.evaluate(() => {
-    //     return .toString()
-    // })
-    //await page.evaluate(() => document.querySelector('div.isv-r').click())
 
 
     await browser.close()
