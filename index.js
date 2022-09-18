@@ -21,23 +21,47 @@ async function start(searchString) {
         return searchSections.find(e => e.includes("&tbm=isch"))
     })
     await page.goto(imagesSectionUrl)
-    await page.screenshot({ path: "images.png" })
 
-    let selectImage = await page.evaluate(() => {
-        page.click(document.querySelector(".isv-r a"))
-        page.screenshot({ path: "clickedAnchor.png" })
+    // let divsToBeClicked = await page.evaluate(() => {
+    //     return Array.from(document.querySelectorAll(".isv-r")).map(div => div.getAttribute('class')).slice(0, 12)
+    // })
+
+    //let divsToBeClicked = await page.$$('#islrg > div.islrc')
+    let divsToBeClicked = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll('#islrg > div.islrc > div')).map(ele => ele.getAttribute('data-id')).slice(0, 12)
     })
 
+    for (const div of divsToBeClicked) {
+        const singleDiv = await page.evaluate(el => el, div)
+        page.waitForXPath('//*[@id="islrg"]/div[1]/div[1]/@data-id')
+        await page.click(`div[data-id="${singleDiv}"]`)
+        await page.waitForSelector('img.n3VNCb')
+        let imageUrl = await page.evaluate(() => {
+            return document.querySelector("#Sva75c > div > div > div.pxAole > div.tvh9oe.BIB1wf > c-wiz > div > div.OUZ5W > div.zjoqD > div.qdnLaf.isv-id.b0vFpe > div > a > img").src
+        })
+        if (imageUrl.includes("https://")) {
+            page.goto(imageUrl)
+        }
+        page.goBack()
+        loopCOunt++
+    }
 
-    // for(let image of imageUrls){
+    await fs.writeFile("loops.txt", loopCOunt.toString())
 
-    //     // const imagePage = await page.goto(image)
-    //     // await fs.writeFile(image.split("/").pop(), await imagePage.buffer())
-
+    // for (div of divsToBeClicked) {
+    //     await page.click(`${div}`)
+    //     //await page.waitForSelector('.zjoqD img')
+    //     //page.goto(document.querySelector('.zjoqD img').src)
     // }
+
+    // let imageToClick = await page.evaluate(() => {
+    //     return .toString()
+    // })
+    //await page.evaluate(() => document.querySelector('div.isv-r').click())
+
 
     await browser.close()
 
 }
 
-start("banana")
+start("watermelon")
