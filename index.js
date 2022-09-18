@@ -13,7 +13,6 @@ async function download(url, imageName) {
 }
 
 async function start(searchString) {
-
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
     await page.goto(`https://www.google.com/search?q=${searchString}`)
